@@ -52,11 +52,13 @@
 %                             algorithm. 
 % 
 % This routine can be compiled to increase its speed by a factor of about
-% 50, which is certainly advisable when the complete application requires 
+% 10-15, which is certainly advisable when the complete application requires 
 % a great number of Lambert problems to be solved. The entire routine is 
 % written in embedded MATLAB, so it can be compiled with the emlmex() 
-% function. To do this, make sure MATLAB's current directory is equal to 
-% where this file is located. Then, copy-paste and execute the following 
+% function (older MATLAB) or codegen() function (MATLAB 2011a and later). 
+% 
+% To do this using emlmex(), make sure MATLAB's current directory is equal 
+% to where this file is located. Then, copy-paste and execute the following 
 % commands to the command window:
 %
 %    example_input = {...
@@ -68,7 +70,24 @@
 %    emlmex -eg example_input lambert.m
 %
 % This is of course assuming your compiler is configured correctly. See the 
-% docs on emlmex() on how to do that. 
+% documentation of emlmex() on how to do that. 
+%
+% Using codegen(), the syntax is as follows: 
+%
+%    example_input = {...
+%         [0.0, 0.0, 0.0], ...% r1vec
+%         [0.0, 0.0, 0.0], ...% r2vec
+%          0.0, ...           % tf
+%          0.0, ...           % m
+%          0.0};              % muC
+%    codegen lambert.m -args example_input
+%
+% Note that in newer MATLAB versions, the code analyzer will complain about 
+% the pragma "%#eml" after the main function's name, and possibly, issue 
+% subsequent warnings related to this issue. To get rid of this problem, simply 
+% replace the "%#eml" directive with "%#codegen".
+%
+%
 %
 % References:
 %
@@ -100,7 +119,8 @@
 % Izzo's version:
 % Very fast, but not very robust for more complicated cases
 % -----------------------------------------------------------------
-function [V1, V2, extremal_distances, exitflag] = lambert(r1vec, r2vec, tf, m, muC)%#eml
+function [V1, V2, extremal_distances, exitflag] = lambert(...
+        r1vec, r2vec, tf, m, muC) %#eml
 
 % original documentation:
 %{
@@ -654,29 +674,33 @@ function [sig, dsigdx, d2sigdx2, d3sigdx3] = sigmax(y)
     
     % preload the factors [an] 
     % (25 factors is more than enough for 16-digit accuracy)    
-    an = [4.000000000000000e-001;     2.142857142857143e-001;     4.629629629629630e-002
-          6.628787878787879e-003;     7.211538461538461e-004;     6.365740740740740e-005
-          4.741479925303455e-006;     3.059406328320802e-007;     1.742836409255060e-008
-          8.892477331109578e-010;     4.110111531986532e-011;     1.736709384841458e-012
-          6.759767240041426e-014;     2.439123386614026e-015;     8.203411614538007e-017
-          2.583771576869575e-018;     7.652331327976716e-020;     2.138860629743989e-021
-          5.659959451165552e-023;     1.422104833817366e-024;     3.401398483272306e-026
-          7.762544304774155e-028;     1.693916882090479e-029;     3.541295006766860e-031
-          7.105336187804402e-033];
+    persistent an;
+    if isempty(an)
+        an = [
+            4.000000000000000e-001;     2.142857142857143e-001;     4.629629629629630e-002
+            6.628787878787879e-003;     7.211538461538461e-004;     6.365740740740740e-005
+            4.741479925303455e-006;     3.059406328320802e-007;     1.742836409255060e-008
+            8.892477331109578e-010;     4.110111531986532e-011;     1.736709384841458e-012
+            6.759767240041426e-014;     2.439123386614026e-015;     8.203411614538007e-017
+            2.583771576869575e-018;     7.652331327976716e-020;     2.138860629743989e-021
+            5.659959451165552e-023;     1.422104833817366e-024;     3.401398483272306e-026
+            7.762544304774155e-028;     1.693916882090479e-029;     3.541295006766860e-031
+            7.105336187804402e-033];
+    end
     
     % powers of y
     powers = y.^(1:25);
     
-    % sigma
+    % sigma itself
     sig = 4/3 + powers*an;
     
-    % dsigma / dx
+    % dsigma / dx (derivative)
     dsigdx = ( (1:25).*[1, powers(1:24)] ) * an;
     
-    % d2sigma / dx2
+    % d2sigma / dx2 (second derivative)
     d2sigdx2 = ( (1:25).*(0:24).*[1/y, 1, powers(1:23)] ) * an;
     
-    % d3sigma / dx3
+    % d3sigma / dx3 (third derivative)
     d3sigdx3 = ( (1:25).*(0:24).*(-1:23).*[1/y/y, 1/y, 1, powers(1:22)] ) * an;
     
 end
