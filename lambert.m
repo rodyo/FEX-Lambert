@@ -655,7 +655,18 @@ function [T, Tp, Tpp, Tppp] = LancasterBlanchard(x, q, m)
         z  = sqrt(1 + q^2*E);
         f  = y*(z - q*x);
         g  = x*z - q*E;
-        d  = (E < 0)*(atan2(f, g) + pi*m) + (E > 0)*log( max(0, f + g) );
+
+        % BUGFIX: (Simon Tardivel) this line is incorrect for E==0 and f+g==0
+        % d  = (E < 0)*(atan2(f, g) + pi*m) + (E > 0)*log( max(0, f + g) );
+        % it should be written out like so: 
+        if (E<0)
+            d = atan2(f, g) + pi*m;
+        else if (E==0)
+            d = 0;
+        else 
+            d = log(max(0, f+g));
+        end
+
         % T(x)
         T = 2*(x - q*z - d/y)/E;
         %  T'(x)
