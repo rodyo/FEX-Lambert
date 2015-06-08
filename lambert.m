@@ -661,7 +661,7 @@ function [T, Tp, Tpp, Tppp] = LancasterBlanchard(x, q, m)
         % it should be written out like so: 
         if (E<0)
             d = atan2(f, g) + pi*m;
-        else if (E==0)
+        elseif (E==0)
             d = 0;
         else 
             d = log(max(0, f+g));
