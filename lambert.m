@@ -761,7 +761,7 @@ function extremal_distances = ...
         if (theta1*theta2 < 0)
             % if |th1| + |th2| = turnangle, we know that the pericenter was 
             % passed
-            if (abs(theta1)+abs(theta2) == dth)
+            if abs(abs(theta1) + abs(theta2) - dth) < 5*eps(dth)
                 minimum_distance = pericenter;
             % this condition can only be false for elliptic cases, and 
             % when it is indeed false, we know that the orbit passed 
