@@ -111,7 +111,15 @@
 
 
 % If you find this work useful, please consider a donation:
-% https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6G3S5UYM7HJ3N
+% https://www.paypal.me/RodyO/3.5
+
+% If you want to cite this work in an academic paper, please use
+% the following template:
+%
+% Rody Oldenhuis, orcid.org/0000-0002-3162-3660. "Lambert" <version>,
+% <date you last used it>. MATLAB Robust solver for Lambert's
+% orbital-boundary value problem. 
+% https://nl.mathworks.com/matlabcentral/fileexchange/26348
 
 
 
@@ -405,7 +413,7 @@ as described in his 1990 paper.
 
 
 % If you find this work useful, please consider a donation:
-% https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6G3S5UYM7HJ3N
+% https://www.paypal.me/RodyO/3.5
       
     % ADJUSTED FOR EML-COMPILATION 29/Sep/2009
     
